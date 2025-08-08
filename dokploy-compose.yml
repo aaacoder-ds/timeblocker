@@ -1,0 +1,25 @@
+version: '3.9'
+
+services:
+  web:
+    image: ghcr.io/${GITHUB_REPOSITORY:-aaacoder-ds/timeblocker}:latest
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+    ports:
+      - "3000:3000"
+    labels:
+      # Traefik routing for Dokploy
+      - "traefik.enable=true"
+      - "traefik.http.routers.timeblocker.rule=Host(`timeblocker.aaacoder.xyz`)"
+      - "traefik.http.routers.timeblocker.entrypoints=websecure"
+      - "traefik.http.routers.timeblocker.tls=true"
+      - "traefik.http.services.timeblocker.loadbalancer.server.port=3000"
+    networks:
+      - web
+
+networks:
+  web:
+    external: true
+
